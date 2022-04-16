@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 """
-Created on Thu Mar 24 22:56:35 2022
+Created on Thu April 16 22:56:35 2022
 
 @author: johnomole
 """
@@ -53,7 +53,7 @@ def beer(**kwargs):
             return
 
         if output_format is None or output_path is None:
-
+            pass
 
         else:
             LOG.info("The code below will save the data as CSV in your root directory")
