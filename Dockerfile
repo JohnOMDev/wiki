@@ -1,18 +1,17 @@
 FROM python:3.8
 
 # initialize the working directory
-WORKDIR /wiki_api
+WORKDIR /freenow
 
-#install dependency
-# COPY requirements.txt
-# RUN pip install -r requirements.txt
+# copy the wiki api
+COPY wiki_api ./wiki_api
 
-#copy the punk api
-COPY /wiki_api .
+COPY setup.py ./
 
-#run the application
-RUN python setup.py install
 
-# CMD["python", "main.py"]
+COPY README.md ./
+
+
+# run the application and build the packege
 
 RUN python setup.py install
