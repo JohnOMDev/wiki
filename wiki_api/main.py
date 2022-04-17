@@ -7,11 +7,10 @@ Created on Thu April 16 22:56:35 2022
 """
 import logging
 import os
-import time
 import click
 import sys
-import csv
 import psycopg2
+import configparser
 import pandas as pd
 from src.app import WIKIMEDIA
 from helper.sql_wiki import SqlQueries
@@ -75,11 +74,13 @@ def wiki(**kwargs):
         keyword =  kwargs.get("keyword")
         limit =  kwargs.get("limit")
         if limit and isinstance(int(limit), int):
-            data = export_raw_data_to_db(keyword, limit)
+            df = export_raw_data_to_db(keyword, limit)
         else:
             df = export_raw_data_to_db(keyword)
         selected_col = ['id', 'title', 'description', 'url', 'article']
-        conn = psycopg2.connect("host=127.0.0.1 dbname=*** user=*** password=***")
+        config = configparser.ConfigParser()
+        config.read('db.cfg')
+        conn = psycopg2.connect("host={} dbname={} user={} password={} port={}".format(*config['db'].values()))
         cur = conn.cursor()
         insert_statement(cur, df, selected_col)
         conn.close()
