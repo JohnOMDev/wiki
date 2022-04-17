@@ -26,7 +26,7 @@ install_requires = [x.strip() for x in all_reqs if ('git+' not in x) and (
     not x.startswith('#')) and (not x.startswith('-'))]
 
 setup (
- name = 'WIKI',
+ name = 'smart',
  description = long_description,
  long_description_content_type='text/markdown',
  version = '1.0.0',
