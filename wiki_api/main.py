@@ -11,13 +11,18 @@ import time
 import click
 import sys
 import csv
-from wiki_api.src.app import WIKIMEDIA
+import psycopg2
+import pandas as pd
+from src.app import WIKIMEDIA
+from helper.sql_wiki import SqlQueries
 logging.basicConfig(format="%(asctime)s %(name)s %(levelname)-10s %(message)s")
 LOG = logging.getLogger("WIKI API")
 LOG.setLevel(os.environ.get("LOG_LEVEL", logging.DEBUG))
 
 ##############################################################################
 LOG.info("init parameters")
+#Initialize wikipedia API client
+wiki_client = WIKIMEDIA()
 #############################################################################
 
 @click.group()
@@ -29,46 +34,56 @@ def main():
 
 @main.command()
 @click.argument('keyword', nargs=1)
-@click.option('--limit', type=str, help = "provide the limit for the output")
-@click.option('--output-format', type=str, help = "The format to export the data e.g csv")
-@click.option('--output-path', type=str, help = "The path to export the data e.g desktop or document")
-def beer(**kwargs):
+@click.option('--limit', type=int, help = "provide the limit for the output")
+
+def export_raw_data_to_db(keyword, limit=10):
+    data_search = wiki_client.search_keywords(keyword, limit)
+    data = list()
+    try:
+        for row in data_search['pages']:
+            #row=data_search['pages'][0]
+            key = row.get("title")
+            id_ = str(row["id"])
+            data_article = wiki_client.extract_article(key)
+            html = data_article["query"]["pages"][id_]["extract"]
+            data_clean = wiki_client.extract_clean_description(html)
+            row["article"]=data_clean
+            data.append(row)
+        df = pd.DataFrame(data)
+    except Exception as e:
+        LOG.error(e)
+    return df
+
+def insert_statement(cur, df, selected_col):
+    # df_data = df[selected_col]
+    for i in df.index:
+        #i=0
+        row = df['thumbnail'][i]
+        if row is not None and 'url' in row:
+            df['uri'] = row['url']
+        else:
+            df['url'] = ''
+        wiki_data = list(df[selected_col].values)
+        cur.execute(SqlQueries.insert_data, wiki_data)
+
+
+def wiki(**kwargs):
     """We want to be able to extract article for a provided keyword on Wikipedia"""
-    #Initialize wikipedia API client
-    wiki_client = WIKIMEDIA()
     LOG.info(kwargs)
     error={}
     try:
-        output_format = kwargs.get("output_format")
-        output_path =  kwargs.get("output_path")
-
         keyword =  kwargs.get("keyword")
-        until =  kwargs.get("until")
-        if until and isintance(until, int):
-            data = wiki_client.search_keywords(keyword, until)
+        limit =  kwargs.get("limit")
+        if limit and isinstance(int(limit), int):
+            data = export_raw_data_to_db(keyword, limit)
         else:
-            data = wiki_client.search_keywords(keyword)
-        if output_format.lower() != 'csv':
-            LOG.error("We only support 'CSV' as output format at the moment, but you indicate 'output_format' ")
-            return
-
-        if output_format is None or output_path is None:
-            pass
-
-        else:
-            LOG.info("The code below will save the data as CSV in your root directory")
-            path =os.getcwd() + '/data'
-            filepath = path + "\\" + output_path
-            with open(filepath, 'w', encoding='utf8', newline='') as csv_file:
-                fc = csv.DictWriter(csv_file,
-                                    fieldnames=data[0].keys(),
-
-                                   )
-                fc.writeheader()
-                fc.writerows(data)
-            return
-
-
+            df = export_raw_data_to_db(keyword)
+        selected_col = ['id', 'title', 'description', 'url', 'article']
+        conn = psycopg2.connect("host=127.0.0.1 dbname=*** user=*** password=***")
+        cur = conn.cursor()
+        insert_statement(cur, df, selected_col)
+        conn.close()
+        return
     except Exception as e:
         LOG.error(f"Problem with the command: {e} ")
 
