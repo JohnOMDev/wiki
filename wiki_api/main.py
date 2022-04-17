@@ -69,7 +69,6 @@ def insert_statement(cur, df, selected_col):
 def wiki(**kwargs):
     """We want to be able to extract article for a provided keyword on Wikipedia"""
     LOG.info(kwargs)
-    error={}
     try:
         keyword =  kwargs.get("keyword")
         limit =  kwargs.get("limit")
@@ -79,7 +78,7 @@ def wiki(**kwargs):
             df = export_raw_data_to_db(keyword)
         selected_col = ['id', 'title', 'description', 'url', 'article']
         config = configparser.ConfigParser()
-        config.read('db.cfg')
+        config.read('./db.cfg')
         conn = psycopg2.connect("host={} dbname={} user={} password={} port={}".format(*config['db'].values()))
         cur = conn.cursor()
         insert_statement(cur, df, selected_col)
