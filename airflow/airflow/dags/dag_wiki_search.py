@@ -49,8 +49,7 @@ run_docker_package   = DockerOperator(
                             auto_remove             = True,
                             command                 = f"smart wiki taxi --limit 10",
                             docker_url              = "tcp://docker-proxy:2375",
-                            network_mode            = "bridge",
-                            volumes                 = ["/data:/data"],
+                            network_mode            = "bridge"
                             )
 
 ################################################################################
