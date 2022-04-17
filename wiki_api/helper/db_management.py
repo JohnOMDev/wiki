@@ -1,5 +1,10 @@
 import psycopg2
+import configparser
 from helper.sql_wiki import SqlQueries
+
+config = configparser.ConfigParser()
+config.read('./db.cfg')
+
 
 
 """
@@ -18,19 +23,19 @@ def create_database():
     """
 
     # connect to default database
-    conn = psycopg2.connect("host=127.0.0.1 dbname=*** user=*** password=***")
+    conn = psycopg2.connect("host={} dbname={} user={} password={} port={}".format(*config['db'].values()))
     conn.set_session(autocommit=True)
     cur = conn.cursor()
 
     # create database with UTF8 encoding
-    cur.execute("DROP DATABASE IF EXISTS ***")
-    cur.execute("CREATE DATABASE *** WITH ENCODING 'utf8' TEMPLATE template0")
+    cur.execute("DROP DATABASE IF EXISTS freenow")
+    cur.execute("CREATE DATABASE freenow WITH ENCODING 'utf8' TEMPLATE template0")
 
     # close connection to default database
     conn.close()
 
     # connect to database
-    conn = psycopg2.connect("host=127.0.0.1 dbname=*** user=*** password=***")
+    conn = psycopg2.connect("host={} dbname={} user={} password={} port={}".format(*config['db'].values()))
     cur = conn.cursor()
 
     return cur, conn
