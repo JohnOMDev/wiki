@@ -1,15 +1,11 @@
 import psycopg2
 import configparser
-from helper.sql_wiki import SqlQueries
+from sql_wiki import SqlQueries
 
 config = configparser.ConfigParser()
-config.read('./db.cfg')
+config.read('db.cfg')
 
 
-
-"""
-    PLEASE INSERT YOUR POSTGRESQL USERNAME, PASSWORD AND DATABASE BELOW
-"""
 
 def create_database():
     """
@@ -35,7 +31,7 @@ def create_database():
     conn.close()
 
     # connect to database
-    conn = psycopg2.connect("host={} dbname={} user={} password={} port={}".format(*config['db'].values()))
+    conn = psycopg2.connect("host={} dbname={} user={} password={} port={}".format(*config['freenowdb'].values()))
     cur = conn.cursor()
 
     return cur, conn
@@ -53,7 +49,7 @@ def drop_tables(cur, conn):
     -------
     Drops table using the queries `drop_table`.
     """
-    query = SqlQueries.drop_table
+    query = SqlQueries.drop_table.format("wiki")
     cur.execute(query)
     conn.commit()
 
@@ -68,7 +64,7 @@ def create_tables(cur, conn):
     -------
     Creates table using the queries `create_wikipedia_article`.
     """
-    query = SqlQueries.create_wikipedia_article
+    query = SqlQueries.create_wikipedia_article.format("wiki")
     cur.execute(query)
     conn.commit()
 
