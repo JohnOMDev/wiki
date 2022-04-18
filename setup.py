@@ -19,7 +19,7 @@ with open(path.join(here, 'README.md'), encoding='utf-8') as f:
     long_description = f.read()
 
 # automatically captured required modules for install_requires in requirements.txt
-with open(path.join('wiki_api/requirements.txt'), encoding='utf-8') as f:
+with open(path.join('smart/requirements.txt'), encoding='utf-8') as f:
     all_reqs = f.read().split('\n')
 
 install_requires = [x.strip() for x in all_reqs if ('git+' not in x) and (
@@ -38,7 +38,7 @@ setup (
  python_requires='>=3.8', # any python greater than 2.7
 entry_points='''
         [console_scripts]
-        wiki_api=wiki_api.main:main
+        smart=smart.app:main
         ''',
 include_package_data=True
 )
