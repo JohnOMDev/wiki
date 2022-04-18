@@ -1,6 +1,8 @@
+numpy
 pandas
 requests
 click
 suds
 attrs
 psycopg2-binary
+bs4

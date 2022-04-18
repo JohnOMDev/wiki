@@ -35,7 +35,7 @@ setup (
  keywords='wiki, wikipedia, wikimedia',
  packages = find_packages(), # list of all packages
  install_requires = install_requires,
- python_requires='>=3.8', # any python greater than 2.7
+ python_requires='>=3.6', # any python greater than 2.7
 entry_points='''
         [console_scripts]
         smart=smart.app:main

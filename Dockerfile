@@ -4,7 +4,7 @@ FROM python:3.8
 WORKDIR /freenow
 
 # copy the wiki api
-COPY wiki_api ./wiki_api
+COPY smart ./smart
 
 COPY setup.py ./
 

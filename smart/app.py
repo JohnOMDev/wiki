@@ -12,7 +12,7 @@ import sys
 #import psycopg2
 #import configparser
 #import pandas as pd
-from wiki_api.src.wikimedia import WIKIMEDIA
+from smart.src.wikimedia import WIKIMEDIA
 #from helper.sql_wiki import SqlQueries
 logging.basicConfig(format="%(asctime)s %(name)s %(levelname)-10s %(message)s")
 LOG = logging.getLogger("WIKI API")
@@ -54,6 +54,7 @@ def wiki(**kwargs):
         LOG.error(f"Problem with the command: {e} ")
 
     # selected_col = ['id', 'title', 'description', 'url', 'article']
+    LOG.info(df)
     return df
 
 if __name__ == '__main__':
