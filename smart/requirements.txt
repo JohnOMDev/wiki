@@ -1,0 +1,6 @@
+pandas
+requests
+click
+suds
+attrs
+psycopg2-binary
