@@ -4,6 +4,7 @@ import os
 import re
 import pandas as pd
 from bs4 import BeautifulSoup
+from smart.src.insert_query import SqlQueries
 
 logging.basicConfig(format="%(asctime)s %(name)s %(levelname)-10s %(message)s")
 LOG = logging.getLogger("PERSONIO DAG")
@@ -147,25 +148,6 @@ class WIKIMEDIA:
             LOG.error(e)
         return text
 
-    def find_occurence(self, article, word):
-        """
-
-        Parameters
-        ----------
-        article : TYPE
-            DESCRIPTION.
-        word : TYPE
-            DESCRIPTION.
-
-        Returns
-        -------
-        count : TYPE
-            DESCRIPTION.
-
-        """
-        count = sum(1 for _ in re.finditer(r'\b%s\b' % re.escape(word), article))
-        return count
-
     def export_raw_data_to_db(self, keyword, limit=10):
         data_search = self.search_keywords(keyword, limit)
         data = list()
@@ -184,14 +166,21 @@ class WIKIMEDIA:
             LOG.error(e)
         return df
 
-    def insert_statement(self, cur, df, selected_col):
-        # df_data = df[selected_col]
-        for i in df.index:
-            #i=0
-            row = df['thumbnail'][i]
-            if row is not None and 'url' in row:
-                df['uri'] = row['url']
-            else:
-                df['url'] = ''
-            wiki_data = list(df[selected_col].values)
-            cur.execute(SqlQueries.insert_data, wiki_data)
+    def insert_statement(self, cur, df):
+        """
+
+        Parameters
+        ----------
+        cur : TYPE
+            DESCRIPTION.
+        df : TYPE
+            DESCRIPTION.
+
+        Returns
+        -------
+        None.
+
+        """
+
+        for i, row in df.iterrows():
+            cur.execute(SqlQueries.insert_data.format("wiki"), list(row))
