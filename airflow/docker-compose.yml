@@ -14,11 +14,13 @@ services:
             - POSTGRES_USER=airflow
             - POSTGRES_PASSWORD=airflow
             - POSTGRES_DB=airflow
+        volumes:
+            - ./data/postgres:/var/lib/postgresql/data
     redis:
         image: redis:5.0.5
 
     flower:
-        image: airflow-flower
+        image: flower:latest
         build:
           context: .
         restart: always
@@ -31,7 +33,7 @@ services:
         command: flower
 
     webserver:
-        image: airflow-webserver
+        image: webserver:latest
         build:
           context: .
         restart: always
@@ -42,7 +44,6 @@ services:
             - LOAD_EX=n
             - FERNET_KEY=46BKJoQYlPPOexq0OhDZnIlNepKFf87WFwLbfzqDDho=
             - EXECUTOR=Celery
-            - PYTHONPATH=/usr/local/airflow
         env_file:
           - env.list
         volumes:
@@ -57,7 +58,7 @@ services:
             retries: 3
 
     scheduler:
-        image: airflow-scheduler
+        image: scheduler:latest
         build:
           context: .
         restart: always
@@ -69,13 +70,11 @@ services:
             - LOAD_EX=n
             - FERNET_KEY=46BKJoQYlPPOexq0OhDZnIlNepKFf87WFwLbfzqDDho=
             - EXECUTOR=Celery
-            - PYTHONPATH=/usr/local/airflow
         command: scheduler
-        env_file:
-          - env.list
 
-    worker:
-        image: airflow-worker
+
+    worker1:
+        image: worker1:latest
         build:
           context: .
         restart: always
@@ -86,7 +85,18 @@ services:
         environment:
             - FERNET_KEY=46BKJoQYlPPOexq0OhDZnIlNepKFf87WFwLbfzqDDho=
             - EXECUTOR=Celery
-            - PYTHONPATH=/usr/local/airflow
         command: worker
-        env_file:
-          - env.list
+
+    worker2:
+        image: worker2:latest
+        build:
+          context: .
+        restart: always
+        depends_on:
+            - scheduler
+        volumes:
+            - ./airflow/dags:/usr/local/airflow/dags
+        environment:
+            - FERNET_KEY=46BKJoQYlPPOexq0OhDZnIlNepKFf87WFwLbfzqDDho=
+            - EXECUTOR=Celery
+        command: worker

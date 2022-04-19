@@ -1,6 +1,7 @@
 import logging
 import os
 import pandas as pd
+import configparser
 from datetime import datetime, timedelta
 from airflow import DAG
 from airflow.operators.docker_operator import DockerOperator
@@ -8,20 +9,27 @@ from airflow.utils.dates import days_ago
 from airflow.hooks.base_hook import BaseHook
 from airflow.operators.python_operator import PythonOperator
 from airflow.operators.dummy_operator import DummyOperator
-from airflow.configuration import conf
-
+from dags.helper.db_management import DataManagement
 
 logging.basicConfig(format="%(asctime)s %(name)s %(levelname)-10s %(message)s")
 LOG = logging.getLogger("Punk Beer DAG")
 LOG.setLevel(os.environ.get("LOG_LEVEL", logging.DEBUG))
 
-
+config = configparser.ConfigParser()
+config.read('db.cfg')
 ##############################################################################
-    LOG.info("Initiate Dag")
+LOG.info("Initiate Dag")
 #############################################################################
+limit =10
+defaultdb = "host={} dbname={} user={} password={} port={}".format(*config['db'].values())
+
+newdb = "host={} dbname={} user={} password={} port={}".format(*config['freenowdb'].values())
+
+client_db = DataManagement(defaultdb, newdb)
+
 
 default_args = {
-'owner'                 : 'smava-data-platform-team',
+'owner'                 : 'freenow-data-platform-team',
 'depend_on_past'        : False,
 'email_on_failure'      : False,
 'email_on_retry'        : False,
@@ -42,12 +50,24 @@ with DAG('dag-wiki-api',
 LOG.info("Running the docker package")
 ##############################################################################
 
+##############################################################################
+LOG.info("Create db and table if not exists the data")
+##############################################################################
+
+
+
+create_db_table = PythonOperator(
+            task_id='create_db_table',
+            python_callable=client_db.main
+
+)
+
 run_docker_package   = DockerOperator(
                             task_id                 = 'run_docker_package',
                             image                   = 'smart-wiki:v1.0.0',
                             api_version             = 'auto',
                             auto_remove             = True,
-                            command                 = f"smart wiki taxi --limit 10",
+                            command                 = f"smart wiki taxi --limit {limit}",
                             docker_url              = "tcp://docker-proxy:2375",
                             network_mode            = "bridge"
                             )
