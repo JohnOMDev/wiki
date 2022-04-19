@@ -1,22 +1,23 @@
 import logging
 import os
-import pandas as pd
 import configparser
 from datetime import datetime, timedelta
 from airflow import DAG
 from airflow.operators.docker_operator import DockerOperator
 from airflow.utils.dates import days_ago
-from airflow.hooks.base_hook import BaseHook
 from airflow.operators.python_operator import PythonOperator
+from airflow.operators.postgres_operator import PostgresOperator
 from airflow.operators.dummy_operator import DummyOperator
-from dags.helper.db_management import DataManagement
+from helper.db_management import DataManagement
+from helper.sql_wiki import SqlQueries
+
 
 logging.basicConfig(format="%(asctime)s %(name)s %(levelname)-10s %(message)s")
 LOG = logging.getLogger("Punk Beer DAG")
 LOG.setLevel(os.environ.get("LOG_LEVEL", logging.DEBUG))
 
 config = configparser.ConfigParser()
-config.read('db.cfg')
+config.read('dags/db.cfg')
 ##############################################################################
 LOG.info("Initiate Dag")
 #############################################################################
@@ -62,9 +63,10 @@ create_db_table = PythonOperator(
 
 )
 
+
 run_docker_package   = DockerOperator(
                             task_id                 = 'run_docker_package',
-                            image                   = 'smart-wiki:v1.0.0',
+                            image                   = 'smart-wiki:v1.0.1',
                             api_version             = 'auto',
                             auto_remove             = True,
                             command                 = f"smart wiki taxi --limit {limit}",
@@ -79,22 +81,23 @@ LOG.info("Running Data Quality")
 #   run_quality_check   =   DataQualityOperator()
 
 ##############################################################################
-LOG.info("Preparing the data")
+LOG.info("Preparing the reports")
 ##############################################################################
 
-# make_report         = PythonOperator(
-#                                task_id = "make_report",
-#                                python_callable=preprocess_data
-#            )
+
+make_report = PostgresOperator(
+                    task_id='make_report',
+                    postres_conn_id='postgres_default_id',
+                    sql=SqlQueries.word_occurence.format("reports")
+                    )
 
 
 
 end_operator        = DummyOperator(task_id='Stop_execution',  dag=dag)
 
 
-start_operator >> run_docker_package >> end_operator
+start_operator >> create_db_table >> run_docker_package >> make_report >> end_operator
 
-# run_quality_check >> make_report >>
 
 
 LOG.info("Punk Beer Report Completed")

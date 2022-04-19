@@ -1,6 +1,6 @@
 import psycopg2
 import configparser
-from sql_wiki import SqlQueries
+from helper.sql_wiki import SqlQueries
 
 config = configparser.ConfigParser()
 config.read('db.cfg')
