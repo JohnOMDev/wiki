@@ -21,7 +21,7 @@ config.read('dags/db.cfg')
 ##############################################################################
 LOG.info("Initiate Dag")
 #############################################################################
-limit =10
+limit =20
 defaultdb = "host={} dbname={} user={} password={} port={}".format(*config['db'].values())
 
 newdb = "host={} dbname={} user={} password={} port={}".format(*config['freenowdb'].values())
@@ -66,7 +66,7 @@ create_db_table = PythonOperator(
 
 run_docker_package   = DockerOperator(
                             task_id                 = 'run_docker_package',
-                            image                   = 'smart-wiki:v1.0.1',
+                            image                   = 'smart-wiki:v1.0.2',
                             api_version             = 'auto',
                             auto_remove             = True,
                             command                 = f"smart wiki taxi --limit {limit}",

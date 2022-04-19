@@ -47,9 +47,10 @@ def wiki(**kwargs):
             df = wiki_client.export_raw_data_to_db(keyword)
         selected_col = ['id', 'title', 'description', 'article']
         df = df[selected_col]
+
         if not print_:
             config = configparser.ConfigParser()
-            config.read('./db.cfg')
+            config.read('smart/db.cfg')
             conn = psycopg2.connect("host={} dbname={} user={} password={} port={}".format(*config['db'].values()))
             cur = conn.cursor()
             wiki_client.insert_statement(cur, df)
