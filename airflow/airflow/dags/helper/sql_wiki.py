@@ -30,7 +30,7 @@ class SqlQueries:
             FROM word_splitting
             WHERE lower(word) ilike '%taxi%'
         )
-        SELECT {} AS keyword, total AS occurence
+        SELECT "{}" AS keyword, total AS occurence
         FROM find_every_keyword_presence
 );
     """
