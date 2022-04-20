@@ -88,8 +88,8 @@ LOG.info("Preparing the reports")
 
 make_report = PostgresOperator(
                     task_id='make_report',
-                    postres_conn_id='postgres_default_id',
-                    sql=SqlQueries.word_occurence.format("reports", "wiki", keyword)
+                    postgres_conn_id='postgres_default_id',
+                    sql=SqlQueries.word_occurence.format("reports", "wiki", keyword, keyword)
                     )
 
 
