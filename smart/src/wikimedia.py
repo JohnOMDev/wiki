@@ -183,4 +183,5 @@ class WIKIMEDIA:
         """
 
         for i, row in df.iterrows():
+            print(row)
             cur.execute(SqlQueries.insert_data.format("wiki"), list(row))

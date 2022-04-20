@@ -66,7 +66,7 @@ create_db_table = PythonOperator(
 
 run_docker_package   = DockerOperator(
                             task_id                 = 'run_docker_package',
-                            image                   = 'smart-wiki:v1.0.2',
+                            image                   = 'smart-wiki:v1.0.3',
                             api_version             = 'auto',
                             auto_remove             = True,
                             command                 = f"smart wiki taxi --limit {limit}",

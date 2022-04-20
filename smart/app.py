@@ -46,7 +46,7 @@ def wiki(**kwargs):
         else:
             df = wiki_client.export_raw_data_to_db(keyword)
         selected_col = ['id', 'title', 'description', 'article']
-        df = df[selected_col]
+        df = df.columns[[selected_col]]
 
         if not print_:
             config = configparser.ConfigParser()
