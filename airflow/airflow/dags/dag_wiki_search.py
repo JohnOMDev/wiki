@@ -13,7 +13,7 @@ from helper.sql_wiki import SqlQueries
 
 
 logging.basicConfig(format="%(asctime)s %(name)s %(levelname)-10s %(message)s")
-LOG = logging.getLogger("Punk Beer DAG")
+LOG = logging.getLogger("Wiki DAG")
 LOG.setLevel(os.environ.get("LOG_LEVEL", logging.DEBUG))
 
 config = configparser.ConfigParser()
@@ -22,6 +22,7 @@ config.read('dags/db.cfg')
 LOG.info("Initiate Dag")
 #############################################################################
 limit =20
+keyword = "taxi"
 defaultdb = "host={} dbname={} user={} password={} port={}".format(*config['db'].values())
 
 newdb = "host={} dbname={} user={} password={} port={}".format(*config['freenowdb'].values())
@@ -66,10 +67,10 @@ create_db_table = PythonOperator(
 
 run_docker_package   = DockerOperator(
                             task_id                 = 'run_docker_package',
-                            image                   = 'smart-wiki:v1.0.3',
+                            image                   = 'smart-wiki:v1.0.4',
                             api_version             = 'auto',
                             auto_remove             = True,
-                            command                 = f"smart wiki taxi --limit {limit}",
+                            command                 = f"smart wiki {keyword} --limit {limit}",
                             docker_url              = "tcp://docker-proxy:2375",
                             network_mode            = "bridge"
                             )
@@ -88,7 +89,7 @@ LOG.info("Preparing the reports")
 make_report = PostgresOperator(
                     task_id='make_report',
                     postres_conn_id='postgres_default_id',
-                    sql=SqlQueries.word_occurence.format("reports")
+                    sql=SqlQueries.word_occurence.format("reports", "wiki", keyword)
                     )
 
 
@@ -100,4 +101,4 @@ start_operator >> create_db_table >> run_docker_package >> make_report >> end_op
 
 
 
-LOG.info("Punk Beer Report Completed")
+LOG.info("wiki Report Completed")

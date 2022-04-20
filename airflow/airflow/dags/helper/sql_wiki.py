@@ -20,13 +20,18 @@ class SqlQueries:
 
 
     word_occurence = (
-    """ CREATE TABLE {} AS (
-            SELECT word, count(*)
-            FROM (
+    """
+    CREATE TABLE {} AS (
+        WITH word_splitting AS (
               SELECT regexp_split_to_table(article, '\s') as word
-              FROM wiki
-            ) t
-            GROUP BY word
+              FROM {}
+        ), find_every_keyword_presence AS (
+            SELECT count(*) as total
+            FROM word_splitting
+            WHERE lower(word) ilike '%taxi%'
+        )
+        SELECT {} AS keyword, total AS occurence
+        FROM find_every_keyword_presence
 );
     """
     )

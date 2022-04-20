@@ -46,7 +46,7 @@ def wiki(**kwargs):
         else:
             df = wiki_client.export_raw_data_to_db(keyword)
         selected_col = ['id', 'title', 'description', 'article']
-        df = df.columns[[selected_col]]
+        df = df[selected_col]
 
         if not print_:
             config = configparser.ConfigParser()
@@ -54,6 +54,7 @@ def wiki(**kwargs):
             conn = psycopg2.connect("host={} dbname={} user={} password={} port={}".format(*config['db'].values()))
             cur = conn.cursor()
             wiki_client.insert_statement(cur, df)
+            conn.commit()
             conn.close()
         else:
             LOG.info(df.to_dict('records'))
