@@ -49,6 +49,7 @@ def wiki(**kwargs):
         df = df[selected_col]
 
         if not print_:
+            # import the db credentials and connect to it.
             config = configparser.ConfigParser()
             config.read('smart/db.cfg')
             conn = psycopg2.connect("host={} dbname={} user={} password={} port={}".format(*config['db'].values()))

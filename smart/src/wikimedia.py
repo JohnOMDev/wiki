@@ -187,16 +187,16 @@ class WIKIMEDIA:
         Parameters
         ----------
         cur : TYPE
-            DESCRIPTION.
+            connection.
         df : TYPE
-            DESCRIPTION.
+            datafram.
 
         Returns
         -------
         None.
 
         """
-
+        # Export the data to db
         for i, row in df.iterrows():
             # print(row)
             cur.execute(SqlQueries.insert_data.format("wiki"), list(row))
