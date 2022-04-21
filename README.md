@@ -5,8 +5,6 @@ Wikipedia API can be used to access wikipedia articles based on keyword provided
 │   README.md
 └───smart
 │   └───src
-│         └───insert_query.py
-│         └───wikimedia.py
 │   └───app.py
 │   └───config.py
 │   └───db.cfg
@@ -18,13 +16,6 @@ Wikipedia API can be used to access wikipedia articles based on keyword provided
 │    └───requirements.txt
 │    └───env.list
 │    └───airflow
-│          └───Dags
-│               └───db.cfg
-│               └───dag_wiki_search
-│               └───helper
-│                     └───db_management.py
-│                     └───sql_wiki.py
-│          └───airflow.cfg
 └───pg
 │    └───docker-compose.yml
 │    └─── .env
