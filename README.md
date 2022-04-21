@@ -1,28 +1,6 @@
 # wiki
 Wikipedia API can be used to access wikipedia articles based on keyword provided.
 
-## Project Structure
-│   README.md
-└───smart
-│   └───src
-│   └───app.py
-│   └───config.py
-│   └───db.cfg
-│   └───requirements.txt
-│
-└───airflow
-│    └───docker-compose.yml
-│    └───Dockerfile
-│    └───requirements.txt
-│    └───env.list
-│    └───airflow
-└───pg
-│    └───docker-compose.yml
-│    └─── .env
-└───setup.py
-│
-└───Dockerfile
-
 
 ## Implementation
 Clone the repository and follow the steps below.
