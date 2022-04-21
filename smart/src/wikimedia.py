@@ -149,6 +149,21 @@ class WIKIMEDIA:
         return text
 
     def export_raw_data_to_db(self, keyword, limit=10):
+        """
+
+        Parameters
+        ----------
+        keyword : TYPE
+            DESCRIPTION.
+        limit : TYPE, optional
+            DESCRIPTION. The default is 10.
+
+        Returns
+        -------
+        df : TYPE
+            DESCRIPTION.
+
+        """
         data_search = self.search_keywords(keyword, limit)
         data = list()
         try:
