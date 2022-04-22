@@ -165,6 +165,8 @@ class WIKIMEDIA:
 
         """
         data_search = self.search_keywords(keyword, limit)
+        if data_search.get("error"):
+            return data_search
         data = list()
         try:
             for row in data_search['pages']:

@@ -45,6 +45,9 @@ def wiki(**kwargs):
             df = wiki_client.export_raw_data_to_db(keyword, limit)
         else:
             df = wiki_client.export_raw_data_to_db(keyword)
+        if df.get("error"):
+            LOG.info(df)
+            return 
         selected_col = ['id', 'title', 'description', 'article']
         df = df[selected_col]
 
